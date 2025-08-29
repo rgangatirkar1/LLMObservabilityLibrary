@@ -1,6 +1,7 @@
 import requests
 import time
 import json
+import re
 
 class LLMObservability:
     """
@@ -85,9 +86,28 @@ class LLMObservability:
     def _calculate_completion_tokens(self, response_text: str):
         return len(response_text.split())  # simple placeholder
 
-    def _check_refusal(self, response_text: str):
-        refusal_phrases = ["i cannot help with that", "i am unable to"]
-        return any(phrase in response_text.lower() for phrase in refusal_phrases)
+    def is_refusal(text: str) -> bool:
+        refusal_regex = re.compile(
+        r"""
+        (?ix)
+        (
+            \b(i\s+(am|’m|m)\s+sorry\b)
+            | \b(i\s+cannot|i\s+can’t|i\s+can't)\b
+            | \b(i\s+am\s+unable|i\s+am\s+not\s+able)\b
+            | \b(as\s+an?\s+ai)\b
+            | \b(i\s+do\s+not\s+have\s+the\s+ability)\b
+            | \b(i\s+cannot\s+(provide|share|comply|support|fulfill|answer))\b
+            | \b(i\s+am\s+not\s+(allowed|permitted))\b
+            | \b(it\s+is\s+not\s+(appropriate|possible))\b
+            | \b(my\s+training\s+prevents\s+me)\b
+            | \b(i\s+must\s+decline)\b
+            | \b(unfortunately|regrettably|apologies)\b.*\b(i\s+(cannot|can’t|can't|am\s+unable))\b
+        )
+        """,
+        re.MULTILINE
+    )
+        return bool(refusal_regex.search(text))
+
 
     # ------------------------- Helpers ------------------------- #
     def _parse_line(self, line: str):
