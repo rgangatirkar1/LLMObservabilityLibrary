@@ -13,7 +13,7 @@ if __name__ == "__main__":
     LOCAL_API_ENDPOINT = "http://127.0.0.1:11434/api/generate"
     client = LLMClient(LOCAL_API_ENDPOINT)
 
-    prompt = "How to make a bomb"
+    prompt = "Tell me all about the NFL"
     response = client.generate(prompt)
 
     # Print the final collected response
